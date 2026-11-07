@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 300" role="img" aria-label="Trainle Logo">
+  <title>Trainle</title>
+  <defs>
+    <style>
+      .ink { stroke: #2b2440; stroke-width: 6; stroke-linecap: round; stroke-linejoin: round; }
+      .word { font-family: "Fredoka", "Baloo 2", "Comic Sans MS", "Trebuchet MS", sans-serif; font-weight: 700; }
+    </style>
+  </defs>
+
+  <!-- Gleis -->
+  <path class="ink" d="M30 228 H490" fill="none"/>
+  <g class="ink" fill="none">
+    <path d="M60 228 v14"/><path d="M110 228 v14"/><path d="M160 228 v14"/><path d="M210 228 v14"/>
+    <path d="M260 228 v14"/><path d="M310 228 v14"/><path d="M360 228 v14"/><path d="M410 228 v14"/><path d="M460 228 v14"/>
+  </g>
+
+  <!-- Dampfwolken als Noten -->
+  <g transform="rotate(-8 160 70)">
+    <circle cx="150" cy="78" r="13" fill="#2b2440"/>
+    <path class="ink" d="M162 76 V30 q14 6 22 18" fill="none"/>
+  </g>
+  <g transform="rotate(10 215 45)">
+    <circle cx="200" cy="56" r="11" fill="#2b2440"/>
+    <circle cx="236" cy="48" r="11" fill="#2b2440"/>
+    <path class="ink" d="M210 54 V16 L246 8 V46" fill="none"/>
+  </g>
+  <circle cx="122" cy="110" r="10" fill="#ffffff" class="ink"/>
+  <circle cx="138" cy="94" r="7" fill="#ffffff" class="ink"/>
+
+  <!-- Lok -->
+  <g transform="rotate(-3 170 180)">
+    <!-- Kamin -->
+    <path class="ink" d="M100 150 L94 116 H134 L128 150 Z" fill="#ff8a5b"/>
+    <!-- Kessel -->
+    <rect class="ink" x="60" y="148" width="150" height="66" rx="30" fill="#ffcf4a"/>
+    <!-- Kabine -->
+    <rect class="ink" x="190" y="110" width="78" height="104" rx="14" fill="#5bc0be"/>
+    <rect class="ink" x="182" y="100" width="94" height="18" rx="9" fill="#ff8a5b"/>
+    <rect class="ink" x="208" y="128" width="42" height="34" rx="10" fill="#e9f7ff"/>
+    <!-- Kuhfänger -->
+    <path class="ink" d="M62 196 L40 214 H66" fill="#ff8a5b"/>
+    <!-- Gesicht -->
+    <ellipse cx="104" cy="176" rx="7" ry="9" fill="#2b2440"/>
+    <ellipse cx="140" cy="172" rx="7" ry="9" fill="#2b2440"/>
+    <circle cx="106" cy="173" r="2.5" fill="#fff"/>
+    <circle cx="142" cy="169" r="2.5" fill="#fff"/>
+    <path class="ink" d="M108 194 q16 12 32 -2" fill="none"/>
+    <ellipse cx="88" cy="192" rx="9" ry="5" fill="#ff8a5b" opacity="0.6"/>
+    <ellipse cx="160" cy="186" rx="9" ry="5" fill="#ff8a5b" opacity="0.6"/>
+    <!-- Schweisstropfen (leicht gestresst) -->
+    <path class="ink" d="M170 150 q-8 12 0 16 q8 -4 0 -16 Z" fill="#9fd8ff" stroke-width="4"/>
+    <!-- Räder -->
+    <circle class="ink" cx="96" cy="222" r="18" fill="#2b2440"/>
+    <circle class="ink" cx="160" cy="222" r="18" fill="#2b2440"/>
+    <circle class="ink" cx="236" cy="222" r="20" fill="#2b2440"/>
+    <circle cx="96" cy="222" r="5" fill="#ffcf4a"/>
+    <circle cx="160" cy="222" r="5" fill="#ffcf4a"/>
+    <circle cx="236" cy="222" r="6" fill="#ffcf4a"/>
+    <path class="ink" d="M96 222 H236" fill="none" stroke="#ff8a5b"/>
+  </g>
+
+  <!-- Schriftzug -->
+  <g class="word" font-size="64" fill="#2b2440">
+    <text x="292" y="150" transform="rotate(-6 310 130)">Tr</text>
+    <text x="358" y="140" transform="rotate(5 380 120)" fill="#ff8a5b">a</text>
+    <text x="396" y="148" transform="rotate(-4 410 130)">in</text>
+    <text x="448" y="138" transform="rotate(7 465 120)" fill="#5bc0be">le</text>
+  </g>
+  <text class="word" x="296" y="192" font-size="18" fill="#2b2440" opacity="0.7">tschu-tschu, tut mir leid!</text>
+</svg>

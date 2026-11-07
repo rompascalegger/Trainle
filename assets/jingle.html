@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Trainle Jingle</title>
+<style>
+  :root { --bg:#fff8ec; --ink:#2b2440; --accent:#ff8a5b; --teal:#5bc0be; }
+  body { margin:0; min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center;
+         gap:24px; background:var(--bg); color:var(--ink); font-family:"Trebuchet MS", sans-serif; padding:16px; box-sizing:border-box; }
+  img { width:min(520px, 100%); height:auto; }
+  img.chug { animation: chug .32s ease-in-out infinite alternate; }
+  @keyframes chug { from { transform: translateY(0) rotate(-.6deg); } to { transform: translateY(-4px) rotate(.6deg); } }
+  button { font:inherit; font-size:20px; font-weight:700; padding:12px 28px; border-radius:999px; border:4px solid var(--ink);
+           background:var(--accent); color:var(--ink); cursor:pointer; box-shadow:0 5px 0 var(--ink); }
+  button:active { transform:translateY(4px); box-shadow:0 1px 0 var(--ink); }
+  button.on { background:var(--teal); }
+  p { margin:0; opacity:.7; text-align:center; }
+</style>
+</head>
+<body>
+  <img id="logo" src="logo.svg" alt="Trainle Logo">
+  <button id="play">▶ Abfahrt!</button>
+  <p>Quirky Bahnhofs-Jingle, live mit Web Audio erzeugt. Läuft in Schleife.</p>
+<script>
+const BPM = 132, BEAT = 60 / BPM, STEP = BEAT / 4; // 16tel
+let ctx, master, timer, nextTime, step = 0, playing = false;
+
+const N = n => 440 * Math.pow(2, (n - 69) / 12); // MIDI -> Hz
+
+// Melodie: 32 Schritte (2 Takte) x 2 = 64. null = Pause. Leicht schiefe Chromatik = quirky.
+const mel = [
+  72,null,76,null, 79,null,78,79, 81,null,79,null, 76,null,null,null,
+  74,null,77,null, 81,80,81,null, 79,null,76,null, 72,null,null,null,
+  72,null,76,null, 79,null,78,79, 84,null,83,null, 81,79,78,null,
+  77,null,76,null, 74,null,71,null, 72,null,null,null, null,null,null,null
+];
+// Bass im Tschu-Tschu-Rhythmus
+const bassRoots = [48,48,53,55, 48,48,50,55]; // je Viertel-Takt-Gruppe
+function bassNote(s) {
+  const bar8 = Math.floor(s / 8) % 8;
+  const r = bassRoots[bar8];
+  return (s % 4 === 0) ? r : (s % 4 === 2 ? r + 7 : null);
+}
+
+function tone(freq, t, dur, type, vol) {
+  const o = ctx.createOscillator(), g = ctx.createGain();
+  o.type = type; o.frequency.setValueAtTime(freq, t);
+  // kleiner Wackler nach oben: Spielzeug-Charakter
+  o.frequency.exponentialRampToValueAtTime(freq * 1.012, t + dur * 0.5);
+  g.gain.setValueAtTime(0.0001, t);
+  g.gain.exponentialRampToValueAtTime(vol, t + 0.01);
+  g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+  o.connect(g).connect(master); o.start(t); o.stop(t + dur + 0.02);
+}
+
+let noiseBuf;
+function chuff(t, vol) { // Dampfstoss
+  const src = ctx.createBufferSource(); src.buffer = noiseBuf;
+  const f = ctx.createBiquadFilter(); f.type = "bandpass"; f.frequency.value = 1800; f.Q.value = 0.8;
+  const g = ctx.createGain();
+  g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.09);
+  src.connect(f).connect(g).connect(master); src.start(t); src.stop(t + 0.1);
+}
+
+function whistle(t) { // zweitoniges Pfeifen am Ende der Schleife
+  [[N(83), 0], [N(79), 0.22]].forEach(([fq, d]) => {
+    [1, 1.5].forEach(m => tone(fq * m, t + d, 0.24, "triangle", 0.06));
+  });
+}
+
+function schedule(s, t) {
+  const m = mel[s % mel.length];
+  if (m) tone(N(m), t, STEP * 1.6, "square", 0.05);
+  const b = bassNote(s);
+  if (b) tone(N(b), t, STEP * 1.2, "triangle", 0.18);
+  // Tschu-ka-tschu-ka: Akzent auf 1 und 3
+  chuff(t, s % 4 === 0 ? 0.25 : (s % 2 === 0 ? 0.12 : 0.05));
+  if (s % 64 === 60) whistle(t);
+  // ab und zu ein schiefer "Huch"-Ton
+  if (s % 64 === 47) tone(N(66), t, STEP * 0.8, "sawtooth", 0.035);
+}
+
+function tick() {
+  while (nextTime < ctx.currentTime + 0.12) {
+    schedule(step, nextTime);
+    nextTime += STEP; step++;
+  }
+}
+
+function start() {
+  ctx = ctx || new (window.AudioContext || window.webkitAudioContext)();
+  if (!noiseBuf) {
+    noiseBuf = ctx.createBuffer(1, ctx.sampleRate * 0.2, ctx.sampleRate);
+    const d = noiseBuf.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+  }
+  master = ctx.createGain(); master.gain.value = 0.8; master.connect(ctx.destination);
+  ctx.resume(); step = 0; nextTime = ctx.currentTime + 0.05;
+  timer = setInterval(tick, 25); playing = true;
+}
+function stop() { clearInterval(timer); master.disconnect(); playing = false; }
+
+const btn = document.getElementById("play"), logo = document.getElementById("logo");
+btn.addEventListener("click", () => {
+  if (playing) { stop(); btn.textContent = "▶ Abfahrt!"; btn.classList.remove("on"); logo.classList.remove("chug"); }
+  else { start(); btn.textContent = "■ Halt!"; btn.classList.add("on"); logo.classList.add("chug"); }
+});
+</script>
+</body>
+</html>
