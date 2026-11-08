@@ -2,94 +2,116 @@
 <html lang="de">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
+  <meta name="theme-color" content="#fff8ec">
   <title>Trainle</title>
-  <meta name="description" content="Trainle: ein cozy Bahnhofsspiel. Züge mit Gefühlen, ein Hauptbahnhof mit drei Gleisen und du in der Leitstelle.">
+  <meta name="description" content="Trainle: ein cozy Bahnhofsspiel. 25 Züge mit Gefühlen und Bedürfnissen, sechs Schweizer Bahnhöfe und du in der Leitstelle.">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='3' y='9' width='26' height='17' rx='7' fill='%23ffcf4a' stroke='%232b2440' stroke-width='2.5'/%3E%3Ccircle cx='12' cy='16' r='2' fill='%232b2440'/%3E%3Ccircle cx='20' cy='16' r='2' fill='%232b2440'/%3E%3Cpath d='M12 21q4 3 8 0' stroke='%232b2440' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=1.0.1">
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=2.0.2">
 </head>
 <body>
-  <header class="top">
-    <button id="home-btn" class="brand" type="button" title="Zum Start">
-      <span class="brand-loco" aria-hidden="true">🚂</span>
-      <span class="brand-word">Tr<span class="a">a</span>in<span class="le">le</span></span>
-    </button>
-    <div class="top-buttons">
-      <button id="music-btn" class="icon-btn" type="button" title="Musik" aria-label="Musik an oder aus">♪</button>
-      <button id="sound-btn" class="icon-btn" type="button" title="Ton" aria-label="Ton an oder aus">🔊</button>
-      <button id="help-btn" class="icon-btn" type="button" title="So geht's" aria-label="Spielanleitung">?</button>
-    </div>
-  </header>
+  <div id="app">
+    <header class="top">
+      <button id="home-btn" class="brand" type="button" title="Zum Start">
+        <span class="brand-loco" aria-hidden="true">🚂</span>
+        <span class="brand-word">Tr<span class="a">a</span>in<span class="le">le</span></span>
+      </button>
+      <div class="top-buttons">
+        <span id="taler" class="taler" title="Taler: im Laden ausgeben">🪙 <b>0</b></span>
+        <button id="music-btn" class="icon-btn" type="button" title="Musik" aria-label="Musik an oder aus">♪</button>
+        <button id="sound-btn" class="icon-btn" type="button" title="Ton" aria-label="Ton an oder aus">🔊</button>
+        <button id="help-btn" class="icon-btn" type="button" title="So geht's" aria-label="Spielanleitung">?</button>
+      </div>
+    </header>
 
-  <main>
-    <section id="screen-start" class="screen">
+    <!-- Start: Streckennetz -->
+    <section id="screen-start" class="screen scroll">
       <img src="assets/logo.svg" class="hero-logo" alt="Trainle: eine Lok mit Gesicht, aus dem Kamin steigen Musiknoten">
-      <p class="tagline">Ein cozy Bahnhofsspiel. Die Züge haben Gefühle. Du hast die Leitstelle.</p>
       <div class="start-buttons">
-        <button id="daily-btn" class="big-btn" type="button">Tagesfahrt <small id="daily-date"></small></button>
-        <button id="free-btn" class="big-btn alt" type="button">Freie Fahrt</button>
+        <button id="album-btn" class="pill-btn" type="button">📖 Zugbuch <small id="album-count"></small></button>
+        <button id="shop-btn" class="pill-btn" type="button">🛠️ Laden</button>
+        <button id="daily-btn" class="pill-btn alt" type="button">📅 Tagesfahrt <small id="daily-date"></small></button>
       </div>
-      <p id="daily-best" class="dim center"></p>
-      <p id="friends-note" class="dim center small"></p>
+      <h2 class="net-title">Streckennetz <span id="star-total" class="dim"></span></h2>
+      <div id="stations" class="stations"></div>
     </section>
 
+    <!-- Fahrplan -->
     <section id="screen-plan" class="screen" hidden>
-      <h2>Fahrplan <span id="plan-title" class="dim"></span></h2>
-      <p class="dim">Der Bahnhof fährt im Takt. Lege für jede Linie das Gleis fest. Die Grafik zeigt, wo sich Züge in die Quere kommen.</p>
+      <div class="plan-head">
+        <h2 id="plan-title"></h2>
+        <p id="plan-sub" class="dim small"></p>
+      </div>
       <div id="plan-lines" class="plan-lines"></div>
-      <div class="timeline-wrap"><svg id="timeline" viewBox="0 0 640 150" role="img" aria-label="Gleisbelegung im Tagesverlauf"></svg></div>
-      <p id="plan-warn" class="plan-warn"></p>
-      <label class="strict"><input type="checkbox" id="strict"> Strenger Takt <span class="dim">(kein Pausieren, Warten stresst mehr)</span></label>
-      <button id="start-day" class="big-btn" type="button">Tag starten 🚆</button>
+      <div class="timeline-wrap"><svg id="timeline" viewBox="0 0 640 140" role="img" aria-label="Gleisbelegung im Tagesverlauf"></svg></div>
+      <p id="plan-warn" class="plan-warn small"></p>
+      <div class="plan-foot">
+        <button id="auto-plan" class="pill-btn" type="button">🪄 Automatisch</button>
+        <button id="start-day" class="big-btn" type="button">Tag starten 🚆</button>
+      </div>
     </section>
 
-    <section id="screen-game" class="screen wide" hidden>
+    <!-- Spiel -->
+    <section id="screen-game" class="screen game" hidden>
       <div class="hud">
-        <div class="clock" id="clock">05:00</div>
-        <div class="mood" title="Stimmung im ganzen Bahnhof">
-          <span class="mood-label">Stimmung</span>
+        <div class="clock"><svg id="clock-face" viewBox="0 0 40 40" aria-hidden="true"></svg><b id="clock">06:00</b></div>
+        <div class="mood" title="Stimmung im Bahnhof">
           <div class="bar"><i id="mood-bar"></i></div>
-          <b id="mood-val">70%</b>
+          <span id="mood-val">70%</span>
         </div>
-        <div class="hearts" id="hearts" title="Herzen zum Trösten. Alle 15 Minuten kommt eines dazu."></div>
-        <div class="controls">
-          <button id="pause-btn" class="icon-btn" type="button" title="Pause (Leertaste)" aria-label="Pause">❚❚</button>
-          <button id="speed-btn" class="icon-btn" type="button" title="Tempo" aria-label="Tempo">1×</button>
+        <div class="res">
+          <span id="res-hearts" title="Herzen zum Trösten">💛3</span>
+          <span id="res-snacks" title="Snacks im Kiosk">🥐3</span>
+          <span id="res-tools" title="Mechanikerinnen frei">🔧1</span>
         </div>
+        <button id="pause-btn" class="icon-btn sm" type="button" title="Pause (Leertaste)" aria-label="Pause">❚❚</button>
+        <button id="speed-btn" class="icon-btn sm" type="button" title="Tempo" aria-label="Tempo">1×</button>
       </div>
-      <div class="board">
-        <aside class="queue-wrap">
-          <h3>Einfahrt <span class="dim small">wartet auf ein Gleis</span></h3>
-          <div id="queue" class="queue"><p class="dim small empty">Niemand wartet.</p></div>
-        </aside>
-        <div id="station" class="station"></div>
-      </div>
+      <div id="board" class="board" aria-label="Abfahrtstafel"></div>
+      <div id="queue" class="queue"></div>
+      <div id="station" class="station"></div>
       <div id="panel" class="panel"></div>
       <div id="ticker" class="ticker" aria-live="polite"></div>
-      <div id="pause-overlay" class="pause-overlay" hidden><span>Pause</span></div>
+      <div id="pause-overlay" class="pause-overlay" hidden><span>Pause ☕</span></div>
     </section>
 
-    <section id="screen-end" class="screen" hidden></section>
-  </main>
+    <!-- Tagesende -->
+    <section id="screen-end" class="screen scroll" hidden></section>
+  </div>
 
   <dialog id="help">
     <h2>So geht's</h2>
     <ol>
-      <li><b>Fahrplan:</b> Fünf Linien fahren im Takt. Gib jeder ein Gleis. Wo sich Blöcke überschneiden, muss jemand warten.</li>
-      <li><b>Der Tag:</b> Von 05:00 bis 08:00 fahren Züge ein. Ist ihr Gleis besetzt oder sind sie Extrazüge, warten sie in der <b>Einfahrt</b>. Tippe auf den Zug und dann auf ein freies Gleis.</li>
-      <li><b>Gefühle:</b> Wartende Züge werden gestresst. Tippe einen Zug an und
-        <b>tröste</b> ihn (kostet ein 💛), gib ihm <b>mehr Zeit</b> oder lass ihn <b>früher los</b>. Jeder Charakter reagiert anders.</li>
-      <li><b>Stimmung:</b> Wer zufrieden abfährt, hebt die Stimmung im Bahnhof. Es gibt kein Game Over, höchstens einen schlechten Tag.</li>
+      <li><b>Fahrplan:</b> Jede Linie fährt im Takt. Die Leitstelle schlägt Gleise vor, du kannst sie ändern.</li>
+      <li><b>Abfahrtstafel:</b> Oben siehst du immer, wer wann auf welches Gleis kommt, auch Verspätungen.</li>
+      <li><b>Einfahrt:</b> Ist ein Gleis besetzt, warten Züge in der Einfahrt. Tippe den Zug an und dann ein freies Gleis.</li>
+      <li><b>Bedürfnisse:</b> Die Symbole über einem Zug zeigen, was er braucht. Tippe ihn an und drücke den leuchtenden Knopf:
+        💛 Trösten, 🥐 Snack, 🔧 Wartung, 🫧 Waschen, 💬 Plaudern, 🎵 Ständchen, 😴 Mehr Zeit.</li>
+      <li><b>Früher los</b> macht ein Gleis frei, aber wer noch nicht eingestiegen ist, verpasst den Zug.</li>
+      <li><b>Gleise haben Gefühle:</b> Ein Gleis, das lange niemand besucht, wird einsam. Ein Gleis, das nie Pause hat, wird müde.</li>
+      <li><b>Freunde:</b> Züge nebeneinander plaudern. Manche werden Freunde, manche zanken.</li>
+      <li><b>Fortschritt:</b> Sterne schalten neue Bahnhöfe frei, jeder neue Tag einen neuen Zug. Taler gibst du im Laden aus.</li>
     </ol>
-    <h3>Die Charaktere</h3>
-    <ul id="help-chars" class="help-chars"></ul>
-    <p class="dim small">Leertaste pausiert. Die Tagesfahrt ist für alle gleich, die freie Fahrt jedes Mal neu.</p>
+    <p class="dim small">Es gibt kein Game Over. Leertaste pausiert.</p>
     <form method="dialog"><button class="big-btn" type="submit">Los geht's</button></form>
   </dialog>
 
-  <script src="game.js?v=1.0.2"></script>
+  <dialog id="album">
+    <div class="dlg-head"><h2>📖 Zugbuch</h2><form method="dialog"><button class="icon-btn sm" type="submit" aria-label="Schliessen">✕</button></form></div>
+    <div id="album-grid" class="album-grid"></div>
+  </dialog>
+
+  <dialog id="shop">
+    <div class="dlg-head"><h2>🛠️ Laden</h2><form method="dialog"><button class="icon-btn sm" type="submit" aria-label="Schliessen">✕</button></form></div>
+    <p class="dim small">Taler verdienst du mit zufriedenen Zügen und erfüllten Wünschen.</p>
+    <div id="shop-list" class="shop-list"></div>
+  </dialog>
+
+  <script src="data.js?v=2.0.2"></script>
+  <script src="audio.js?v=2.0.2"></script>
+  <script src="game.js?v=2.0.2"></script>
 </body>
 </html>
